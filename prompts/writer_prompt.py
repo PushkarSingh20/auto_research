@@ -35,10 +35,35 @@ def build_writer_prompt(
     *,
     query: str,
     context: str,
+    previous_report: str = "",
+    reviewer_feedback: str = "",
+    weaknesses: list[str] | None = None,
+    iteration: int = 0,
 ) -> str:
     """
     Build the user prompt for the Writer Agent.
     """
+
+    revision_context = ""
+
+    if iteration > 0 and previous_report:
+        weakness_text = "\n".join(f"- {item}" for item in weaknesses or [])
+        revision_context = f"""
+Previous Report:
+
+{previous_report}
+
+Reviewer Feedback:
+
+{reviewer_feedback or "No feedback provided."}
+
+Weaknesses To Fix:
+
+{weakness_text or "- No specific weaknesses provided."}
+
+This is revision iteration {iteration}. Improve the previous report
+using the feedback above while staying faithful to the research context.
+"""
 
     return f"""
 Research Topic:
@@ -48,6 +73,8 @@ Research Topic:
 Available Research Context:
 
 {context}
+
+{revision_context}
 
 Using ONLY the above context, generate a comprehensive,
 well-structured research report in Markdown.

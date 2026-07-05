@@ -19,3 +19,5 @@ class ResearchState(TypedDict):
     review: dict[str, Any]
 
     iteration: int
+
+    runtime: float

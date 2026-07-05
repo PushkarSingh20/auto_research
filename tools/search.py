@@ -79,6 +79,6 @@ def search_web(
 
         return search_results
 
-    except Exception:
-        logger.exception("Search failed.")
+    except Exception as exc:
+        logger.warning("Search failed: %s", exc)
         return []

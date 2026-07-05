@@ -34,16 +34,21 @@ def scraper_node(state: ResearchState) -> ResearchState:
 
     for source in sources:
 
-        content = scrape_url(source["url"])
+        url = source.get("url", "")
+
+        if not url:
+            continue
+
+        content = scrape_url(url)
 
         if not content:
             continue
 
         documents.append(
             {
-                "title": source["title"],
-                "url": source["url"],
-                "snippet": source["snippet"],
+                "title": source.get("title", "Untitled"),
+                "url": url,
+                "snippet": source.get("snippet", ""),
                 "content": content,
                 "source_type": "web",
                 "content_length": len(content),
