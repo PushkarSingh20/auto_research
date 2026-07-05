@@ -9,6 +9,7 @@ from __future__ import annotations
 
 from langgraph.graph import StateGraph, START, END
 
+from config import MAX_ITERATIONS, RQS_THRESHOLD
 from graph.state import ResearchState
 
 from agents.planner import planner_node
@@ -22,27 +23,23 @@ from agents.reviewer_agent import reviewer_node
 # Conditional Routing
 # ------------------------------------------------------------------
 
-MAX_ITERATIONS = 3
-PASSING_SCORE = 8.5
-
-
 def review_router(state: ResearchState) -> str:
     """
     Decide whether to continue improving the report
     or finish the workflow.
     """
 
-    score = state.get("review", {}).get("score", 0)
+    review = state.get("review", {})
 
+    score = review.get("score", 0)
+    approved = review.get("approved", False)
     iteration = state.get("iteration", 0)
 
-    if score >= PASSING_SCORE:
+    if score >= RQS_THRESHOLD and approved:
         return "end"
 
     if iteration >= MAX_ITERATIONS:
         return "end"
-
-    state["iteration"] = iteration + 1
 
     return "rewrite"
 

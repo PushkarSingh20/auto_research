@@ -37,6 +37,17 @@ def research_node(state: ResearchState) -> ResearchState:
 
     max_sources = planner.get("max_sources", 5)
 
+    if isinstance(keywords, str):
+        keywords = [keywords]
+
+    if not isinstance(keywords, list):
+        keywords = []
+
+    try:
+        max_sources = int(max_sources)
+    except (TypeError, ValueError):
+        max_sources = 5
+
     logger.info("Research Agent started.")
 
     sources = search_web(
