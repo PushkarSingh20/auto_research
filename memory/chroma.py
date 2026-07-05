@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import logging
 from uuid import uuid4
+from typing import Any
 
 import chromadb
 from chromadb.utils.embedding_functions import (
@@ -33,19 +34,57 @@ class ChromaMemory:
     """
 
     def __init__(self) -> None:
+        self.client: chromadb.PersistentClient | None = None
+        self.collection: Any | None = None
+        self.disabled = False
 
-        self.client = chromadb.PersistentClient(
-            path=CHROMA_DB_PATH,
-        )
+    def _get_collection(self) -> Any:
+        """
+        Lazily initialize ChromaDB and the sentence-transformer embedding model.
 
-        embedding_function = SentenceTransformerEmbeddingFunction(
-            model_name="all-MiniLM-L6-v2",
-        )
+        This keeps the application importable in environments where the local
+        embedding model has not been downloaded yet. Memory operations still use
+        ChromaDB + Sentence Transformers when the model is available.
+        """
 
-        self.collection = self.client.get_or_create_collection(
-            name=COLLECTION_NAME,
-            embedding_function=embedding_function,
-        )
+        if self.collection is not None:
+            return self.collection
+
+        if self.disabled:
+            raise RuntimeError("Chroma memory is unavailable in this environment.")
+
+        try:
+            self.client = chromadb.PersistentClient(
+                path=CHROMA_DB_PATH,
+            )
+
+            embedding_function = SentenceTransformerEmbeddingFunction(
+                model_name="all-MiniLM-L6-v2",
+            )
+
+            self.collection = self.client.get_or_create_collection(
+                name=COLLECTION_NAME,
+                embedding_function=embedding_function,
+            )
+        except Exception as exc:
+            self.disabled = True
+            raise RuntimeError("Unable to initialize Chroma memory.") from exc
+
+        return self.collection
+
+    # ---------------------------------------------------------
+
+    def is_available(self) -> bool:
+        """
+        Check whether the Chroma memory backend is ready.
+        """
+
+        try:
+            self._get_collection()
+            return True
+        except Exception:
+            logger.warning("Chroma memory is not available.")
+            return False
 
     # ---------------------------------------------------------
 
@@ -59,6 +98,12 @@ class ChromaMemory:
         """
 
         if not documents:
+            return
+
+        try:
+            collection = self._get_collection()
+        except Exception:
+            logger.warning("Skipping memory storage because Chroma is unavailable.")
             return
 
         ids = []
@@ -83,7 +128,7 @@ class ChromaMemory:
                 }
             )
 
-        self.collection.add(
+        collection.add(
 
             ids=ids,
             documents=texts,
@@ -107,7 +152,13 @@ class ChromaMemory:
         Retrieve the most relevant documents.
         """
 
-        results = self.collection.query(
+        try:
+            collection = self._get_collection()
+        except Exception:
+            logger.warning("Skipping memory retrieval because Chroma is unavailable.")
+            return []
+
+        results = collection.query(
 
             query_texts=[query],
             n_results=top_k,
@@ -148,7 +199,20 @@ class ChromaMemory:
         Return total stored documents.
         """
 
-        return self.collection.count()
+        if self.collection is None:
+            try:
+                client = chromadb.PersistentClient(path=CHROMA_DB_PATH)
+                collection = client.get_or_create_collection(name=COLLECTION_NAME)
+                return collection.count()
+            except Exception:
+                logger.warning("Unable to count Chroma documents.")
+                return 0
+
+        try:
+            return self.collection.count()
+        except Exception:
+            logger.warning("Unable to count Chroma documents.")
+            return 0
 
 
 memory = ChromaMemory()

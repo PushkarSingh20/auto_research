@@ -35,19 +35,17 @@ def writer_node(state: ResearchState) -> ResearchState:
     query = state["query"]
 
     documents = state.get("research", {}).get("documents", [])
+    review = state.get("review", {})
+    previous_report = state.get("writer", {}).get("report", "")
+    iteration = state.get("iteration", 0)
 
     if not documents:
-
         logger.warning("No documents available.")
+        report = "# Report\n\nNo research documents were found."
+    else:
+        context = "\n\n".join(
 
-        state.setdefault("writer", {})
-        state["writer"]["report"] = "# Report\n\nNo research documents were found."
-
-        return state
-
-    context = "\n\n".join(
-
-        f"""
+            f"""
 TITLE:
 {doc["title"]}
 
@@ -58,32 +56,37 @@ CONTENT:
 {doc["content"]}
 """
 
-        for doc in documents
+            for doc in documents
 
-    )
+        )
 
-    prompt = build_writer_prompt(
-        query=query,
-        context=context,
-    )
+        prompt = build_writer_prompt(
+            query=query,
+            context=context,
+            previous_report=previous_report,
+            reviewer_feedback=review.get("feedback", ""),
+            weaknesses=review.get("weaknesses", []),
+            iteration=iteration,
+        )
 
-    report = llm.generate_text(
+        report = llm.generate_text(
 
-        system_prompt=WRITER_SYSTEM_PROMPT,
-        user_prompt=prompt,
-        temperature=0.3,
-        max_tokens=2500,
+            system_prompt=WRITER_SYSTEM_PROMPT,
+            user_prompt=prompt,
+            temperature=0.3,
+            max_tokens=2500,
 
-    )
+        )
 
-    if not report.strip():
+        if not report.strip():
 
-        logger.warning("Writer returned an empty report.")
+            logger.warning("Writer returned an empty report.")
 
-        report = "# Report\n\nUnable to generate report."
+            report = "# Report\n\nUnable to generate report."
 
     state.setdefault("writer", {})
     state["writer"]["report"] = report
+    state["iteration"] = iteration + 1
 
     logger.info("Writer Agent completed.")
 
