@@ -9,7 +9,6 @@ from __future__ import annotations
 
 import json
 import logging
-
 from openai import (
     OpenAI,
     APIConnectionError,
@@ -36,6 +35,19 @@ class LLMService:
     def __init__(self) -> None:
         """Initialize the Grok client."""
 
+        self.client: OpenAI | None = None
+
+    def _get_client(self) -> OpenAI:
+        """
+        Create the OpenAI-compatible Grok client only when needed.
+
+        Delaying initialization keeps imports, tests, and the Streamlit app
+        usable even before the API key is configured.
+        """
+
+        if self.client is not None:
+            return self.client
+
         if not GROK_API_KEY:
             raise ValueError(
                 "GROK_API_KEY is not configured. Please check your .env file."
@@ -45,6 +57,8 @@ class LLMService:
             base_url="https://api.x.ai/v1",
             api_key=GROK_API_KEY,
         )
+
+        return self.client
 
     def generate_text(
         self,
@@ -62,7 +76,7 @@ class LLMService:
         """
 
         try:
-            response = self.client.chat.completions.create(
+            response = self._get_client().chat.completions.create(
                 model=GROK_MODEL,
                 temperature=temperature,
                 max_tokens=max_tokens,
@@ -79,6 +93,10 @@ class LLMService:
             )
 
             return response.choices[0].message.content or ""
+
+        except ValueError as exc:
+            logger.warning("LLM request skipped: %s", exc)
+            return ""
 
         except (
             APITimeoutError,
@@ -111,7 +129,7 @@ class LLMService:
             return {}
 
         try:
-            return json.loads(text)
+            return json.loads(_clean_json_text(text))
 
         except json.JSONDecodeError:
             logger.warning("LLM returned invalid JSON.")
@@ -136,3 +154,35 @@ class LLMService:
 
 # Singleton instance used throughout the project
 llm = LLMService()
+
+
+def _clean_json_text(text: str) -> str:
+    """
+    Clean common LLM JSON formatting before parsing.
+    """
+
+    cleaned = text.strip()
+
+    if cleaned.startswith("```"):
+        cleaned = cleaned.strip("`").strip()
+        if cleaned.lower().startswith("json"):
+            cleaned = cleaned[4:].strip()
+
+    start = cleaned.find("{")
+    end = cleaned.rfind("}")
+
+    if start != -1 and end != -1:
+        return cleaned[start : end + 1]
+
+    return cleaned
+
+
+def call_llm(prompt: str) -> str:
+    """
+    Backward-compatible helper used by the existing smoke test script.
+    """
+
+    return llm.generate_text(
+        system_prompt="You are a helpful assistant.",
+        user_prompt=prompt,
+    )

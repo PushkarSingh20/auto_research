@@ -22,7 +22,7 @@ print("DOCUMENTS")
 
 print("=" * 80)
 
-for doc in state["documents"]:
+for doc in state["research"]["documents"]:
 
     print("\nTITLE:")
     print(doc["title"])
