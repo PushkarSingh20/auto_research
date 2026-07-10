@@ -26,45 +26,27 @@ Automate research from planning to report generation using specialized AI agents
 
 ---
 
-# 📌 Overview
+# 🚀 About AutoResearchAI
 
-AutoResearchAI is an end-to-end **Multi-Agent Research Automation System** that performs the complete research pipeline automatically.
+AutoResearchAI is a **LangGraph-powered Multi-Agent Research Assistant** that automates the entire research workflow—from planning and web search to intelligent web scraping, AI-powered report generation, review, and semantic memory storage.
 
-Instead of relying on a single Large Language Model, the system distributes responsibilities among specialized AI agents coordinated by **LangGraph**.
+Unlike traditional AI chatbots that generate answers in a single step, AutoResearchAI works like a **real research team**. Specialized AI agents collaborate to plan the research, gather reliable information, write structured reports, review their own output, and continuously improve the final result before presenting it to the user.
 
-The workflow performs:
-
-✔ Research Planning
-
-✔ Live Web Search
-
-✔ Intelligent Web Scraping
-
-✔ AI Report Writing
-
-✔ Report Quality Evaluation
-
-✔ Semantic Memory Storage
-
-✔ Interactive Streamlit Interface
+Built with **Python, LangGraph, Mistral AI, ChromaDB, and Streamlit**, the project focuses on making AI-driven research more **structured, transparent, scalable, and reliable**.
 
 ---
 
-# 🎯 Why AutoResearchAI?
+# 📸 Demo
 
-Traditional LLMs generate answers directly.
+## 🖥 Home Page
 
-AutoResearchAI **thinks before it writes.**
+![Home Page](Screenshot%20From%202026-07-08%2000-57-32.png)
 
-It first plans the research, gathers reliable sources, extracts meaningful information, generates a structured report, reviews its own work, and continuously improves the output before presenting the final result.
+---
 
-This modular workflow makes the system:
+## 📄 Generated Report
 
-- More transparent
-- More scalable
-- Easier to debug
-- Easier to extend
-- Better suited for complex research tasks
+![Generated Report](Screenshot%20From%202026-07-08%2000-55-39.png)
 
 ---
 
@@ -145,71 +127,6 @@ This modular workflow makes the system:
 
 ---
 
-# ⚙ Workflow
-
-```text
-User Query
-
-     │
-
-     ▼
-
-Planner Agent
-
-     │
-
-     ▼
-
-Research Agent
-
-     │
-
-     ▼
-
-Scraper Agent
-
-     │
-
-     ▼
-
-Writer Agent
-
-     │
-
-     ▼
-
-Reviewer Agent
-
-     │
-
-     ▼
-
-Is RQS ≥ Threshold?
-
- ┌──────┴───────┐
-
- │              │
-
-Yes             No
-
- │              │
-
- ▼              ▼
-
-Store       Rewrite Report
-
-Memory          │
-
- │              │
-
- └──────┬───────┘
-
-        ▼
-
- Final Report
-```
-
----
 
 # 🛠 Tech Stack
 
@@ -227,37 +144,6 @@ Memory          │
 
 ---
 
-# 📂 Project Structure
-
-```bash
-AutoResearchAI/
-
-├── agents/
-│   ├── planner.py
-│   ├── research_agent.py
-│   ├── scraper_agent.py
-│   ├── writer_agent.py
-│   └── reviewer_agent.py
-│
-├── graph/
-│   ├── state.py
-│   └── workflow.py
-│
-├── memory/
-│   └── chroma.py
-│
-├── prompts/
-│
-├── tools/
-│
-├── app.py
-├── main.py
-├── config.py
-├── requirements.txt
-└── README.md
-```
-
----
 
 # 🚀 Installation
 
@@ -271,18 +157,6 @@ python -m venv .venv
 source .venv/bin/activate
 
 pip install -r requirements.txt
-```
-
-Create a `.env`
-
-```env
-MISTRAL_API_KEY=YOUR_API_KEY
-
-MISTRAL_MODEL=mistral-small-latest
-
-MAX_ITERATIONS=3
-
-RQS_THRESHOLD=8.5
 ```
 
 Run the application
@@ -299,20 +173,6 @@ python main.py
 
 ---
 
-# 📸 Demo
-
-## 🖥 Home Page
-
-![Home Page](Screenshot%20From%202026-07-08%2000-57-32.png)
-
----
-
-## 📄 Generated Report
-
-![Generated Report](Screenshot%20From%202026-07-08%2000-55-39.png)
-
----
-
 # 🚀 Future Improvements
 
 - PDF Report Generation
@@ -326,31 +186,9 @@ python main.py
 
 ---
 
-# 🤝 Contributing
-
-Contributions are always welcome.
-
-Feel free to fork the repository and submit a Pull Request.
-
----
-
-# ⭐ Support
-
-If you found this project useful,
-
-leave a ⭐ on the repository.
-
-It really helps!
-
----
-
 # 👨‍💻 Author
 
 **Pushkar Singh**
-
-AI • Data Science • Machine Learning
-
-GitHub: https://github.com/PushkarSingh20
 
 LinkedIn: https://www.linkedin.com/in/pushkar-singh-512648235/
 
