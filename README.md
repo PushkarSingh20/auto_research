@@ -36,7 +36,6 @@ Built with **Python, LangGraph, Mistral AI, ChromaDB, and Streamlit**, the proje
 
 ---
 
-# 📸 Demo
 
 ## 🖥 Home Page
 
@@ -199,9 +198,5 @@ LinkedIn: https://www.linkedin.com/in/pushkar-singh-512648235/
 This project is licensed under the MIT License.
 
 ---
-
-<div align="center">
-
-### ⭐ Building the future of AI-powered research automation.
 
 </div>
