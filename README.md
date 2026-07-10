@@ -303,13 +303,13 @@ python main.py
 
 ## Home Page
 
-> *(Insert Streamlit Home Screenshot)*
+> ![Image Alt]([image_url](https://github.com/PushkarSingh20/auto_research/blob/78cc87221b2255d38b9f94901744457ddeeaa814/Screenshot%20From%202026-07-08%2000-57-32.png))*
 
 ---
 
 ## Generated Report
 
-> *(Insert Final Output Screenshot)*
+> *![Image Alt]([https://github.com/PushkarSingh20/auto_research/blob/78cc87221b2255d38b9f94901744457ddeeaa814/Screenshot%20From%202026-07-08%2000-55-39.png)*
 
 ---
 
