@@ -35,7 +35,19 @@ Unlike traditional AI chatbots that generate answers in a single step, AutoResea
 Built with **Python, LangGraph, Mistral AI, ChromaDB, and Streamlit**, the project focuses on making AI-driven research more **structured, transparent, scalable, and reliable**.
 
 ---
+---
 
+# 🌐 Live Demo
+
+🚀 **Try AutoResearchAI here**
+
+### 👉 https://pushkarsingh20-auto-research-app-a4pla3.streamlit.app/
+
+> **No installation required.** Simply open the link, enter a research topic, and let the AI agents plan, search, scrape, write, review, and generate a complete research report in real time.
+
+> ⚠️ **Note:** The deployed version runs on Streamlit Community Cloud, so the first request may take **30–60 seconds** if the app is waking up from sleep.
+
+---
 
 ## 🖥 Home Page
 
